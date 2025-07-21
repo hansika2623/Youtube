@@ -5,21 +5,22 @@ export const AuthContext = createContext();
 
 export default function AuthProvider({ children }) {
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([]);
+  const [data, setData] = useState({});
   const [value, setValue] = useState("New");
 
-  useEffect(() => {
-    fetchAlldata(value);
-  }, [value]);
-
-  const fetchAlldata = (query) => {
+  const fetchAllData = (query) => {
     setLoading(true);
-    fetchData(`search/?q=${query}`).then(({ contents }) => {
-      console.log(contents);
+    fetchData(`search/?q=${query}`).then(({contents}) => {
+      console.log(data);
       setData(contents);
       setLoading(false);
     });
   };
+
+  useEffect(() => {
+    fetchAllData(value);
+  }, [value]);
+
   return (
     <AuthContext.Provider value={{ loading, data, value, setValue }}>
       {children}
@@ -27,4 +28,4 @@ export default function AuthProvider({ children }) {
   );
 }
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => useContext(AuthContext)

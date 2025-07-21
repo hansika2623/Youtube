@@ -1,15 +1,15 @@
-import { abbreviateNumber } from "js-abbreviation-number";
-import React from "react";
-import { BsFillCheckCircleFill } from "react-icons/bs";
-import Time from "../loader/Time";
-import { Link } from "react-router-dom";
+import React from 'react'
+import { abbreviateNumber } from 'js-abbreviation-number'
+import Time from '../context/loader/Time'
+import { BsFillCheckCircleFill } from 'react-icons/bs'
+import { Link } from 'react-router-dom'
 
-function SearchCard({ video }) {
-  console.log(video);
+function SearchCard({video}) {
+    console.log(video)
   return (
     <div>
-      <Link to={`/video/${video?.videoId}`}>
-        <div className="flex flex-col md:flex-row  mb-8 md:mb-3  md:p-4">
+        <Link to={`/video/${video?.videoId}`}>
+        <div className="flex flex-col md:flex-row  mb-8 md:mb-3  md:p-4 hover:bg-gray-100 rounded-xl transition duration-200">
           <div className="relative flex h-48  w-full md:w-80   ">
             <img
               className="h-full w-full rounded-lg object-cover"
@@ -21,7 +21,7 @@ function SearchCard({ video }) {
             <span className="text-lg md:text-2xl font-semibold line-clamp-2 ">
               {video?.title}
             </span>
-            <span className="empty:hidden text-sm line-clamp-1 md:line-clamp-2md:pr-24 md:my-4">
+            <span className="empty:hidden text-sm line-clamp-1 md:line-clamp-2 md:pr-24 md:my-4">
               {video?.descriptionSnippet}
             </span>
             <div className="hidden md:flex items-center">
@@ -56,7 +56,7 @@ function SearchCard({ video }) {
         </div>
       </Link>
     </div>
-  );
+  )
 }
 
-export default SearchCard;
+export default SearchCard

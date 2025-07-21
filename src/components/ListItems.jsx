@@ -1,4 +1,5 @@
 import React from "react";
+import '../index.css'
 
 function ListItems() {
   const categories = [
@@ -6,34 +7,35 @@ function ListItems() {
     "Music",
     "React routers",
     "Computer programming",
-    "Reverberation",
+    "Reverbration",
     "Movie musicals",
-    "India national cricket team",
+    "Indian Dramas",
     "News",
     "Mixes",
-    "1990s",
-    "Telugu cinema",
+    "Trailers",
+    "Web Series",
+    "Albums",
+    "Mandopop music",
+    "Satire",
+    "Soul Music",
     "Live",
-    "Dramedy",
-    "Dubbing",
-    "Indian soap opera",
-    "Cricket",
-    "Football",
-    "Learn Coding",
+    "Watched",
+    "Recently uploded",
+    "New to you",
   ];
   return (
-    <div className="flex overflow-x-scroll hide-scroll-bar px-4">
-      <div className="flex space-x-4 flex-nowrap">
+    <div className="overflow-x-auto no-scrollbar flex px-4">
+      <div className="flex space-x-4 w-max px-4 py-2">
         {categories.map((category) => {
-          return (
-            <div
-              key={category}
-              className="mb-4 flex-none bg-gray-200 hover:bg-gray-300 duration-300 rounded-xl px-4 py-2 font-medium text-gray-700 cursor-pointer"
-            >
-              {category}
-            </div>
-          );
-        })}
+        return (
+          <div
+            key={category}
+            className="mb-4 cursor-pointer flex-none bg-gray-200 hover:bg-gray-300 duration-300 rounded-xl px-4 py-2 font-medium text-gray-700 "
+          >
+            {category}
+          </div>
+        );
+      })}
       </div>
     </div>
   );

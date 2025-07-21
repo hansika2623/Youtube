@@ -2,39 +2,79 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchData } from "../utils/rapidapi";
 import ReactPlayer from "react-player";
-import { AiOutlineLike } from "react-icons/ai";
 import { abbreviateNumber } from "js-abbreviation-number";
-import SuggestedVideo from "./SuggestedVideo";
 import { BsFillCheckCircleFill } from "react-icons/bs";
+import { useLocation } from "react-router-dom";
+import { FaHeart } from "react-icons/fa";
+import SuggestedVideo from "./SuggestedVideo";
+import { useAuth } from "../context/AuthProvider";
+import '../index.css'
 
 function PlayingVideo() {
-  const [video, setVideo] = useState();
-  const [realatedVideo, setRelativeVideo] = useState();
+  const location = useLocation();
+  const [video, setVideo] = useState(location.state?.video);
+  const [relatedVideo, setRelatedVideo] = useState([]);
   const { id } = useParams();
+  const { data } = useAuth();
 
   useEffect(() => {
-    fetchVideoDetails();
+    if(!location.state?.video){
+      fetchVideoDetails();
+    }else{
+      setVideo(location.state.video);
+    }
     fetchRelatedVideo();
-  }, [id]);
+  }, [id, location.state]);
 
   const fetchVideoDetails = () => {
-    fetchData(`video/details/?id=${id}`).then((res) => {
-      console.log(res);
-      setVideo(res);
-    });
+    if (!location.state?.video) {
+      fetchData(`video/details/?id=${id}`)
+        .then((res) => {
+          //This endpoint details of the video is taken from the rapidapi -> youtube -> sidebar -> video details -> path
+          console.log(res);
+          setVideo(res);
+        })
+        .catch((err) => {
+          console.error("Error fetching video data:", err);
+        });
+    }
   };
-  const fetchRelatedVideo = () => {
-    fetchData(`video/related-contents/?id=${id}`).then((res) => {
-      console.log(res);
-      setRelativeVideo(res);
-    });
+
+  const fetchRelatedVideo = async () => {
+    try {
+      const res = await fetchData(`video/related-contents/?id=${id}`);
+      if (res?.contents?.length > 0) {
+        setRelatedVideo(res.contents.filter((item) => item.type === "video"));
+      } else {
+        const fallback = shuffleArray(
+          Array.isArray(data)?data.filter((item) => item.type === "video"):[]
+        )
+          .slice(0, 10)
+          .map((item) => ({
+            type: "video",
+            video: item.video,
+          }));
+        setRelatedVideo(fallback);
+      }
+    } catch (error) {
+      console.error("Error in fetching related videos:", error);
+    }
+  };
+
+  const shuffleArray = (arr) => {
+    const shuffled = [...arr];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
   };
 
   return (
-    <div className=" flex justify-center flex-row h-[calc(100%-56px)] mt-16">
-      <div className="w-full max-w-[1580px] flex flex-col lg:flex-row">
-        <div className="flex flex-col lg:w-[calc(100%-350px)] xl:w-[100%-400px] px-4 py-3 lg:py-6">
-          <div className="h-[200px] md:h-[700px] ml-[-16px] mr-[-16px] lg:ml-0 lg:mr-0">
+    <div className="flex mt-16 h-[calc(100vh-64px)] overflow-hidden">
+      <div className="flex-1 overflow-y-scroll px-4 pb-10 custom-scroll no-scrollbar">
+        <div className="max-w-[900px] mx-auto">
+          <div className="aspect-video w-full bg-black rounded-lg overflow-hidden">
             <ReactPlayer
               url={`https://www.youtube.com/watch?v=${id}`}
               height="100%"
@@ -44,59 +84,55 @@ function PlayingVideo() {
               playing={true}
             />
           </div>
-          <div className="font-bold text-sm md:text-xl mt-4 line-clamp-2">
-            {video?.title}
-          </div>
-          <div className="flex justify-between flex-col md:flex-row mt-4">
-            <div className="flex ">
-              <div className="flex items-start">
-                <div className="flex h-11 w-11 rounded-full overflow-hidden">
-                  <img
-                    className="h-full w-full object-cover"
-                    src={video?.author?.avatar[0]?.url}
-                  />
+          <div className="font-bold text-xl mt-4">{video?.title}</div>
+          <div className="flex justify-between items-start mt-4 flex-col md:flex-row">
+            <div className="flex items-start">
+              <img
+                className="w-11 h-11 rounded-full object-cover"
+                src={video?.author?.avatar[0]?.url ||"https://www.iconpacks.net/icons/2/free-user-icon-3296-thumb.png"}
+              
+              />
+              <div className="ml-3">
+                <div className="text-md font-semibold flex items-center">
+                  {video?.author?.title}
+                  {video?.author?.badges[0]?.type === "VERIFIED_CHANNEL" && (
+                    <BsFillCheckCircleFill className="text-gray-500 text-sm ml-1" />
+                  )}
+                </div>
+                <div className="text-sm text-gray-500">
+                  {video?.author?.stats?.subscribersText}
                 </div>
               </div>
-              <div className="flex space-x-5">
-                <div className="flex flex-col ml-3">
-                  <div className="text-md font-semibold flex items-center">
-                    {video?.author?.title}
-                    {video?.author?.badges[0]?.type === "VERIFIED_CHANNEL" && (
-                      <BsFillCheckCircleFill className="text-white/[0.5] text-[12px] ml-1" />
-                    )}
-                  </div>
-                  <div className=" text-sm">
-                    {video?.author?.stats?.subscribersText}
-                  </div>
-                </div>
-                <span className="mt-1 text-center bg-red-500 px-3 pt-2 rounded-full text-white cursor-pointer hover:bg-red-700 duration-200 ">
-                  Subscribe
-                </span>
-              </div>
             </div>
-            <div className="flex mt-4 md:mt-0">
-              <div className="flex items-center justify-center h-11 px-6 rounded-3xl bg-white/[0.15]">
-                <AiOutlineLike className="text-xl mr-2" />
-                {`${abbreviateNumber(video?.stats?.likes, 2)} Likes`}
-              </div>
-              <div className="flex items-center justify-center h-11 px-6 rounded-3xl bg-white/[0.15] ml-4">
-                {`${abbreviateNumber(video?.stats?.views, 2)} Views`}
-              </div>
+            <span className="mt-4 md:mt-0 text-center bg-red-500 px-4 py-2 rounded-full text-white cursor-pointer hover:bg-red-700 duration-200">
+              Subscribe
+            </span>
+          </div>
+          <div className="flex gap-4 mt-4">
+            <div className="flex items-center bg-white/20 px-4 py-2 rounded-3xl text-sm">
+              <FaHeart className="text-red-600 mr-2" />
+              {`${abbreviateNumber(video?.stats?.likes || 0, 2)} Likes`}
+            </div>
+            <div className="flex items-center bg-white/20 px-4 py-2 rounded-3xl text-sm">
+              {`${abbreviateNumber(video?.stats?.views, 2)} Views`}
             </div>
           </div>
-          <div className="p-4 bg-gray-100 rounded-xl mt-4 text-sm">
-            {video?.description}
+
+          <div className="bg-gray-100 rounded-xl p-4 mt-4 text-sm text-gray-700">
+            {video?.description || video?.descriptionSnippet || "No description for this video"}
           </div>
-          <div className="flex gap-x-6 font-semibold rounded-xl mt-4 text-xl">
-            {video?.stats?.comments} <p>Comments</p>
+          <div className="mt-4 text-sm text-gray-500 font-semibold">
+            {video?.stats?.comments !== undefined
+              ? `${abbreviateNumber(video?.stats?.comments, 2)} Comments`
+              : "Comments Disabled"}
           </div>
         </div>
-        <div className="flex flex-col px-4 py-6 h-[calc(100vh-4.625rem)] overflow-y-scroll overflow-x-hidden lg:w-[350px] xl:w-[400px]">
-          {realatedVideo?.contents?.map((item, index) => {
-            if (item?.type !== "video") return false;
-            return <SuggestedVideo key={index} video={item?.video} />;
-          })}
-        </div>
+      </div>
+      <div className="w-[350px] xl:w-[400px] overflow-y-scroll px-4 py-6 custom-scroll no-scrollbar"><h1 className="text-xl mb-3 font-bold">More like this</h1>
+        {relatedVideo.map((item, index) => {
+          if (item?.type !== "video") return null;
+          return <SuggestedVideo key={index} video={item?.video} />;
+        })}
       </div>
     </div>
   );
