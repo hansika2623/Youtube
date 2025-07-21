@@ -35,14 +35,14 @@ This project focuses on dynamic UI rendering, API integration, and modern React 
 
 ## 📁 Folder Structure
 
-src/
-│
-├── components/ # Navbar, Sidebar, Video Cards, etc.
-├── context/ # Context API (AuthProvider, UtilsContext)
-├── pages/ # Home, PlayingVideo, Search
-├── utils/ # RapidAPI fetch logic
-├── loader/ # Time formatting component
-├── App.jsx # Routes defined here
-└── main.jsx # React root
+  src/
+- │
+- ├── components/ # Navbar, Sidebar, Video Cards, etc.
+- ├── context/ # Context API (AuthProvider, UtilsContext)
+- ├── pages/ # Home, PlayingVideo, Search
+- ├── utils/ # RapidAPI fetch logic
+- ├── loader/ # Time formatting component
+- ├── App.jsx # Routes defined here
+- └── main.jsx # React root
 
 --------
