@@ -1,8 +1,8 @@
-import Navbar from "./Components/Navbar";
+import Navbar from "./components/Navbar"
 import { Route, Routes } from "react-router-dom";
-import Home from "./Components/Home";
-import PlayingVideo from "./Components/PlayingVideo";
-import Search from "./Components/Search";
+import Home from "./components/Home";
+import PlayingVideo from "./components/PlayingVideo";
+import Search from "./components/Search";
 import Loading from "./context/loader/Loading";
 import {useAuth} from "./context/AuthProvider"
 
